@@ -30,7 +30,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                  script{
-                     sh "docker build -t jpf2209/test-1"
+                     sh "docker build -t jpf2209/test-1 ."
                  }
             }
         }
