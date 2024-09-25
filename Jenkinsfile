@@ -15,6 +15,7 @@ pipeline {
                 echo"1"
             }
         }
+        
         stage('Build') {
             steps {
                  sh "mvn install"
@@ -25,12 +26,21 @@ pipeline {
                  sh "mvn clean compile"
             }
         }
+        
         stage('Build Docker Image') {
             steps {
                  sh "docker build -t jpf2209/6_2hd:$BUILD_NUMBER ."
             }
         }
-        stage('Dockerhub Login') {
+        
+        stage('OWASP Scan') {
+            steps {
+                dependencyCheck additionalArguments: '--scan ./ ', odcInstallation: 'DC'
+                dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+            }
+        }
+        
+        stage('Dockerhub Push') {
             steps {
                 script{
                     withDockerRegistry(credentialsId: 'dockerhub') {
